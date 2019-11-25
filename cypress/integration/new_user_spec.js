@@ -13,7 +13,7 @@ context('New User', () => {
 
   it('A new user can create an account, and a group', () => {
     // create account
-    cy.contains("Register here").click();
+    cy.contains("FAIL Register here").click();
     cy.contains("Username").siblings().find("input").type(username);
     cy.contains("Email").siblings().type(username + "@fake.address.com");
     cy.contains("Password").siblings().type(password);
