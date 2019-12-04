@@ -37,5 +37,3 @@ context('New User', () => {
     cy.signin(username, password);
   });
 });
-
-
