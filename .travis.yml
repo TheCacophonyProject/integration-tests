@@ -4,4 +4,12 @@ node_js:
 
 script:
 - npm run lint
+# Create fake thermal camera server
+- git clone "https://github.com/clare/fake-thermal-camera"
+- git clone "https://github.com/TheCacophonyProject/device-register"
+- cd fake-thermal-camera
+- ./run --
+- ./wait-for-camera-server
+# Run tests
+- cd ..
 - npm run release
