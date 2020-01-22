@@ -25,5 +25,11 @@ npm run dev
 ```
 4.  Look for the [cypress](https://www.cypress.io/) interactive environment.
 
+### Lint
+Before committing changes run eslint to check style
+``` bash
+npm run lint
+```
+
 ### Releases
 There are no releases for this project.

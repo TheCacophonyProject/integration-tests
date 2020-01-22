@@ -28,7 +28,8 @@ context('New User', () => {
     cy.contains("Create a group").click();
     cy.contains("Your groups");
     cy.contains("Create group").click();
-    cy.wait(1000);  // not ideal but struggling to deal with popup
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(1000);  // not ideal but popup is causing problems.  To fix later
     cy.contains("Group name").parent().type(group);
     cy.contains("Group name").parent().type('{enter}');
 
