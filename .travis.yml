@@ -1,4 +1,5 @@
 language: node_js
+os: linux
 node_js:
   - "lts/*"
 
@@ -15,9 +16,9 @@ script:
 # - cd fake-thermal-camera
 # - ./run --background
 # - ./wait-for-camera-server
+# - cd ..
 
 # Run tests
-- cd ..
 - npm run release
 
 # - docker logs cacophony-fake-thermal-camera
