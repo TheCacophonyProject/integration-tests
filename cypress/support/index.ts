@@ -1,12 +1,12 @@
 // load the global Cypress types
 /// <reference types="cypress" />
 
+import "../commands/api/authenticate";
 import "../commands/api/user";
 import "../commands/api/camera";
 import "../commands/api/alerts";
 import "../commands/api/events";
 import "../commands/api/recording";
-import "../commands/api/recordings";
 import "../commands/api/monitoring";
 import "../commands/api/stations";
 import "../commands/api/visits";
