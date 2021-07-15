@@ -92,7 +92,7 @@ describe("Authentication", () => {
     //TODO: enable the remainder of the checks once issue 57 is fixed, or remove the remaining checks if we do not implement.
 
     //get devices list
-    //cy.apiCheckDevices(userA+"_temp_token",[{id: getCreds(camera1).id, devicename: getTestName(camera1), groupName: getTestName(group1), userIsAdmin: true, Users: []}]);
+    //cy.apiCheckDeviceInGroup(userA+"_temp_token",[{id: getCreds(camera1).id, devicename: getTestName(camera1), groupName: getTestName(group1), userIsAdmin: true, Users: []}]);
 
     //get device users
 
