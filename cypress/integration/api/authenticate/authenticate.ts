@@ -61,15 +61,20 @@ describe("Authentication", () => {
     cy.apiSignInAs(null,null,getTestName(userA),'bad_password',401);
   });
 
-  it("Superuser can authenticate as another user and receive their permissions", () => {
-    cy.apiSignInAs(null,null,'admin_test','admin_test');
-    //admin_test authenticates as Bruce
-    cy.apiAuthenticateAs('admin_test', userB);
-    //verify each user gets their own data
-    cy.apiCheckUserCanSeeGroup(userB+'_on_behalf',group2);
-    //vefiry user cannot see items outside their group (i.e. are not super_user)
-    cy.apiCheckUserCanSeeGroup(userB+'_on_behalf',group1,false);
-  });
+  //Do not run against a live server as we don't have superuser login
+  if(Cypress.env('test_using_default_superuser')==true) {
+    it("Superuser can authenticate as another user and receive their permissions", () => {
+      cy.apiSignInAs(null,null,'admin_test','admin_test');
+      //admin_test authenticates as Bruce
+      cy.apiAuthenticateAs('admin_test', userB);
+      //verify each user gets their own data
+      cy.apiCheckUserCanSeeGroup(userB+'_on_behalf',group2);
+      //vefiry user cannot see items outside their group (i.e. are not super_user)
+      cy.apiCheckUserCanSeeGroup(userB+'_on_behalf',group1,false);
+    });
+  } else {
+    it.skip("Superuser can authenticate as another user and receive their permissions", () => {});
+  };
 
   it("Non-superuser cannot authenticate as another user", () => {
     cy.apiSignInAs(userA);

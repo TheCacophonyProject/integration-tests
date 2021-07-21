@@ -71,51 +71,59 @@ describe("Devices list", () => {
     });
   });
 
-  it("Super-user should see all devices including User details", () => {
-    cy.apiSignInAs(null,null,superuser,su_passwd);
+  //Do not run against a live server as we don't have superuser login
+  if(Cypress.env('test_using_default_superuser')==true) {
+    it("Super-user should see all devices including User details", () => {
+      cy.apiSignInAs(null,null,superuser,su_passwd);
 
-    const expectedDevice2AdminView={id: getCreds(camera2).id, devicename: getTestName(camera2), active: true, Users: []};
+      const expectedDevice2AdminView={id: getCreds(camera2).id, devicename: getTestName(camera2), active: true, Users: []};
+  
+      cy.apiCheckDevices_contains(superuser, [expectedDeviceAdminView,expectedDevice2AdminView])
+    });
+  } else {
+    it.skip("Super-user should see all devices including User details", () => {});
+  };
 
-    cy.apiCheckDevices_contains(superuser, [expectedDeviceAdminView,expectedDevice2AdminView])
-  });
-
-
-  it("Super-user 'as user' should see only their devices and users only where they are device admin", () => {
-    // note: if this test fails and does not clean up after itself, it will continue to fail until the superuser is removed from the old test devices
-    cy.apiSignInAs(null,null,superuser,su_passwd);
-    // add superuser to group2
-    makeAuthorizedRequest(
-      {
-        method: "POST",
-        url: v1ApiPath("groups/users"),
-        body: {
-          group: getTestName(group2),
-          admin: true,
-          username: superuser
-        }
-      },
-      user2
-    );
-
-
-    cy.apiCheckDevices(superuser, [expectedDevice2AdminView], {"view-mode": "user"});
-
-    //remove superuser from group2
-    makeAuthorizedRequest(
-      {
-        method: "DELETE",
-        url: v1ApiPath("groups/users"),
-        body: {
-          group: getTestName(group2),
-          username: superuser
-        }
-      },
-      user2
-    );
-
-
-  });
-
+  //Do not run against a live server as we don't have superuser login
+  if(Cypress.env('test_using_default_superuser')==true) {
+    it("Super-user 'as user' should see only their devices and users only where they are device admin", () => {
+      // note: if this test fails and does not clean up after itself, it will continue to fail until the superuser is removed from the old test devices
+      cy.apiSignInAs(null,null,superuser,su_passwd);
+      // add superuser to group2
+      makeAuthorizedRequest(
+        {
+          method: "POST",
+          url: v1ApiPath("groups/users"),
+          body: {
+            group: getTestName(group2),
+            admin: true,
+            username: superuser
+          }
+        },
+        user2
+      );
+  
+  
+      cy.apiCheckDevices(superuser, [expectedDevice2AdminView], {"view-mode": "user"});
+  
+      //remove superuser from group2
+      makeAuthorizedRequest(
+        {
+          method: "DELETE",
+          url: v1ApiPath("groups/users"),
+          body: {
+            group: getTestName(group2),
+            username: superuser
+          }
+        },
+        user2
+      );
+  
+  
+    });
+  } else {
+    it.skip("Super-user 'as user' should see only their devices and users only where they are device admin", () => {});
+  }; 
 
   it("Group admin should see everything including device users", () => {
     cy.apiCheckDevices(group_admin, [expectedDeviceAdminView]);

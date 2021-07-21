@@ -100,25 +100,30 @@ describe("Devices add / view / remove users", () => {
     cy.apiCheckDevicesUsers(device_admin, camera, [device_admin_details, group_admin_details]);
   });
 
-  it("Superuser can add/remove user to/from device", () => {
-    cy.apiSignInAs(null,null,superuser,su_passwd);
-	  
-    // add user to device
-    cy.apiAddUserToDevice(superuser, device_member, camera);
-
-    // check user (and group admin) are added
-    cy.apiCheckDevicesUsers(superuser, camera, [device_admin_details, group_admin_details, device_member_details]);
-
-    // check user can access device (one endpoint only - test all endpoints in their own test specs )
-    cy.apiCheckDeviceInGroup(device_member, camera, group, null, expectedDeviceInGroupUserView);
-
-    // check user can be removed from device
-    cy.apiRemoveUserFromDevice(superuser, device_member, camera);
-
-    // check user (but not group admin) has been removed
-    cy.apiCheckDevicesUsers(superuser, camera, [device_admin_details, group_admin_details]);
-
-  });
+  //Do not run against a live server as we don't have superuser login
+  if(Cypress.env('test_using_default_superuser')==true) {
+    it("Superuser can add/remove user to/from device", () => {
+      cy.apiSignInAs(null,null,superuser,su_passwd);
+  	  
+      // add user to device
+      cy.apiAddUserToDevice(superuser, device_member, camera);
+  
+      // check user (and group admin) are added
+      cy.apiCheckDevicesUsers(superuser, camera, [device_admin_details, group_admin_details, device_member_details]);
+  
+      // check user can access device (one endpoint only - test all endpoints in their own test specs )
+      cy.apiCheckDeviceInGroup(device_member, camera, group, null, expectedDeviceInGroupUserView);
+  
+      // check user can be removed from device
+      cy.apiRemoveUserFromDevice(superuser, device_member, camera);
+  
+      // check user (but not group admin) has been removed
+        cy.apiCheckDevicesUsers(superuser, camera, [device_admin_details, group_admin_details]);
+  
+    });
+  } else {
+    it.skip("Superuser can add/remove user to/from device", () => {});
+  };
 
   it("Non-admin device member cannot add view or remove user to device", () => {
     // add non-admin user to device
