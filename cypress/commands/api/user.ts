@@ -42,7 +42,7 @@ Cypress.Commands.add(
     );
     cy.apiCreateUser(userName, false);
     cy.apiCreateGroup(userName, group, false);
-    cy.apiCreateCamera(camera, group, false);
+    cy.apiCreateCamera(camera, group,  null, false);
   }
 );
 

@@ -5,12 +5,7 @@ const HTTP_BadRequest = 400;
 const HTTP_OK = 200;
 
 import { getTestName } from "../../../commands/names";
-import {
-  makeAuthorizedRequest,
-  checkAuthorizedRequestFails,
-  v1ApiPath,
-  getCreds
-} from "../../../commands/server";
+import { getCreds } from "../../../commands/server";
 import { logTestDescription } from "../../../commands/descriptions";
 
 describe("Device in group", () => {
@@ -23,8 +18,8 @@ describe("Device in group", () => {
   const camera = "camera1";
   const NOT_ADMIN = false;
   const ADMIN = true;
-  var expectedDeviceInGroupAdminView;
-  var expectedDeviceInGroupUserView;
+  let expectedDeviceInGroupAdminView;
+  let expectedDeviceInGroupUserView;
 
   before(() => {
     cy.apiCreateUser(group_member);
@@ -33,8 +28,8 @@ describe("Device in group", () => {
     cy.apiCreateUser(hacker);
     cy.apiCreateUserGroupAndCamera(group_admin, group, camera).then(() => {
       expectedDeviceInGroupAdminView={id: getCreds(camera).id, devicename: getTestName(camera), groupName: getTestName(group), userIsAdmin: true, users: [
-	      {userName: getTestName(device_member), admin: false, id: getCreds(device_member).id},
-	      {userName: getTestName(device_admin), admin: true, id: getCreds(device_admin).id}
+        {userName: getTestName(device_member), admin: false, id: getCreds(device_member).id},
+        {userName: getTestName(device_admin), admin: true, id: getCreds(device_admin).id}
       ]};
       expectedDeviceInGroupUserView={id: getCreds(camera).id, devicename: getTestName(camera), groupName: getTestName(group), userIsAdmin: false, users: null};
     });
@@ -74,11 +69,11 @@ describe("Device in group", () => {
 
   // TODO: Fails - returns empty response instead of error message. Issue 60
   it.skip("Correctly handles invalid device", () => {
-   cy.apiCheckDeviceInGroup(group_admin, 'bad-camera', group, null, {}, {}, HTTP_BadRequest);
+    cy.apiCheckDeviceInGroup(group_admin, 'bad-camera', group, null, {}, {}, HTTP_BadRequest);
   });
 
   it("Correctly handles invalid group", () => {
-   cy.apiCheckDeviceInGroup(group_admin, camera, 'bad-group', null, {}, {}, HTTP_BadRequest);
+    cy.apiCheckDeviceInGroup(group_admin, camera, 'bad-group', null, {}, {}, HTTP_BadRequest);
   });
 
 });

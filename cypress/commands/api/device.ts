@@ -44,39 +44,55 @@ Cypress.Commands.add(
 
 Cypress.Commands.add(
   "apiCreateCamera",
-  (cameraName: string, group: string, log = true) => {
+  (cameraName: string, group: string, saltId: number = null, log = true, statusCode: number = 200) => {
     logTestDescription(
-      `Create camera '${cameraName}' in group '${group}'`,
+      `Create camera '${cameraName}' in group '${group}' with saltId '${saltId}'`,
       {
         camera: cameraName,
-        group: group
+        group: group,
+	saltId: saltId
       },
       log
     );
 
-    const request = createCameraDetails(cameraName, group);
-    cy.request(request).then((response) => {
-      const id = response.body.id;
-      saveCreds(response, cameraName, id);
-    });
+    const request = createCameraDetails(cameraName, group, null, saltId);
+    if(statusCode==200) {
+      cy.request(request).then((response) => {
+        const id = response.body.id;
+        saveCreds(response, cameraName, id);
+      });
+    } else {
+      checkRequestFails(request);
+    };
   }
 );
 
 Cypress.Commands.add(
   "apiDeviceReregister",
-  (oldName: string, newName: string, newGroup: string, log = true, statusCode: number = 200) => {
+  (oldName: string, newName: string, newGroup: string, password: string = null, keepName:boolean = false, statusCode: number = 200) => {
+    var uniqueName;
     logTestDescription(
       `Reregister camera '${newName}' in group '${newGroup}'`,
       {
         camera: newName,
         group: newGroup
       },
-      log
+      true
     );
 
+    if(password==null) {
+      password="p"+getTestName(newName);
+    };
+
+    if(keepName==false) {
+      uniqueName=getTestName(newName);
+    } else {
+      uniqueName=newName;
+    };
+
     const data = {
-      newName: getTestName(newName),
-      newPassword: "p"+getTestName(newName),
+      newName: uniqueName,
+      newPassword: password,
       newGroup: getTestName(newGroup)
     };
     const fullUrl = v1ApiPath('devices/reregister');
@@ -102,6 +118,7 @@ Cypress.Commands.add(
   (
     cameraName: string,
     group: string,
+    password: string = null,
     makeCameraATestName = true,
     log = true
   ) => {
@@ -114,7 +131,7 @@ Cypress.Commands.add(
       log
     );
 
-    const request = createCameraDetails(cameraName, group, makeCameraATestName);
+    const request = createCameraDetails(cameraName, group, password, null, makeCameraATestName);
     checkRequestFails(request);
   }
 );
@@ -122,17 +139,26 @@ Cypress.Commands.add(
 function createCameraDetails(
   cameraName: string,
   group: string,
+  password: string,
+  saltId: number,
   makeCameraNameTestName = true
 ): any {
   const fullName = makeCameraNameTestName
     ? getTestName(cameraName)
     : cameraName;
-  const password = "p" + fullName;
+
+  if(password==null) {
+    password = "p" + fullName;
+  };
 
   const data = {
     devicename: fullName,
     password: password,
     group: getTestName(group)
+  };
+
+  if(saltId!=null) {
+    data.saltId=saltId;
   };
 
   return {
@@ -305,15 +331,16 @@ Cypress.Commands.add("apiCheckDeviceInGroup", (userName: string, cameraName: str
   });
 });
 
-Cypress.Commands.add("apiCheckDevicesQuery", (userName: string, queryArray: any, operator: string='and', statusCode: number = 200) => {
+Cypress.Commands.add("apiCheckDevicesQuery", (userName: string, devicesArray: any, groupsArray: any, expectedDevices: any, operator: string='or', statusCode: number = 200) => {
   logTestDescription(
-      `${userName} Check devices using query '${JSON.stringify(queryArray)}' `,
-      { user: userName, queryArray },
+      `${userName} Check devices using query '${JSON.stringify(devicesArray)}' '${operator}' '${JSON.stringify(groupsArray)}'`,
+      { user: userName, devicesArray, groupsArray, operator? },
       true
   );
 
   const params = {
-	    devices: JSON.stringify(queryArray),
+	    devices: JSON.stringify(devicesArray),
+	    groups: JSON.stringify(groupsArray),
 	    operator: operator
   };
   const fullUrl = v1ApiPath('devices/query', params);
@@ -331,16 +358,19 @@ Cypress.Commands.add("apiCheckDevicesQuery", (userName: string, queryArray: any,
 	  // API returns devices: [ groupname: ..., devicename: ..., saltId, ..., Group.groupName: ... ]
 	  // sort both devices and expected devices on devicename,groupname to ensure order is same
           var devices=sortArrayOnTwoKeys(response.body.devices,'devicename','groupname');
-	  queryArray=sortArrayOnTwoKeys(queryArray,'devicename','groupname');
-	  expect(devices.length).to.equal(queryArray.length);
+	  expectedDevices=sortArrayOnTwoKeys(expectedDevices,'devicename','groupname');
+	  expect(devices.length).to.equal(expectedDevices.length);
 
 	  //compare device list
-          for (var index=0; index < queryArray.length; index++) {
-		  expect(devices[index].groupname).to.equal(queryArray[index].groupname);
-		  expect(devices[index].devicename).to.equal(queryArray[index].devicename);
-                  //TODO: consider adding check for salt id
+          for (var index=0; index < expectedDevices.length; index++) {
+		  expect(devices[index].groupname).to.equal(expectedDevices[index].groupname);
+		  expect(devices[index].devicename).to.equal(expectedDevices[index].devicename);
+		  if(expectedDevices[index].saltId!=null) {	
+                    expect(devices[index].saltId).to.equal(expectedDevices[index].saltId);
+		  };
+
 		  //TODO: consider removing the following from API - not a standard format of parameter
-		  expect(devices[index]['Group.groupname']).to.equal(queryArray[index].groupname);
+		  expect(devices[index]['Group.groupname']).to.equal(expectedDevices[index].groupname);
 	  }
        };
   });

@@ -5,11 +5,11 @@ const HTTP_BadRequest = 400;
 const HTTP_OK = 200;
 
 import { getTestName } from "../../../commands/names";
-import { makeAuthorizedRequest, checkAuthorizedRequestFails,
+import { 
+  makeAuthorizedRequest, 
   v1ApiPath,
   getCreds
 } from "../../../commands/server";
-import { logTestDescription } from "../../../commands/descriptions";
 
 describe("Devices list", () => {
   const group_admin = "Edith-group_admin";
@@ -20,23 +20,21 @@ describe("Devices list", () => {
   const group = "Edith-Team";
   const group2 = "Second-E-Team";
   const group3 = "Charlie-Team";
-  const group4 = "Debbie-Team";
   const camera = "E-camera1";
   const NOT_ADMIN = false;
   const ADMIN = true;
   const user2 = "Bridget";
   const user3 = "Charlie";
-  const user4 = "Debbie";
   const camera2 = 'second_E_camera';
   const camera3 = 'Charlie-camera';
   const camera4 = 'Debbie-camera';
   const superuser = 'admin_test';
   const su_passwd = 'admin_test';
-  var expectedDeviceAdminView;
-  var expectedDeviceMemberView;
-  var expectedDevice2AdminView;
-  var expectedDevice3AdminView;
-  var expectedDevice4AdminView;
+  let expectedDeviceAdminView;
+  let expectedDeviceMemberView;
+  let expectedDevice2AdminView;
+  let expectedDevice3AdminView;
+  let expectedDevice4AdminView;
 
   before(() => {
     cy.apiCreateUser(group_member);
@@ -45,13 +43,13 @@ describe("Devices list", () => {
     cy.apiCreateUser(hacker);
     cy.apiCreateUserGroupAndCamera(group_admin, group, camera).then(() => {
       expectedDeviceAdminView={
-	    id: getCreds(camera).id, devicename: getTestName(camera), active: true, Users: [
-              {id: getCreds(device_admin).id, username: getTestName(device_admin), 
-		    DeviceUsers: {admin: true, DeviceId: getCreds(camera).id, UserId: getCreds(device_admin).id}},
-              {id: getCreds(device_member).id, username: getTestName(device_member), 
-                    DeviceUsers: {admin: false, DeviceId: getCreds(camera).id, UserId: getCreds(device_member).id}},
-            ]};   
-      expectedDeviceMemberView={id: getCreds(camera).id, devicename: getTestName(camera), active: true, Users: null}
+        id: getCreds(camera).id, devicename: getTestName(camera), active: true, Users: [
+          {id: getCreds(device_admin).id, username: getTestName(device_admin), 
+            DeviceUsers: {admin: true, DeviceId: getCreds(camera).id, UserId: getCreds(device_admin).id}},
+          {id: getCreds(device_member).id, username: getTestName(device_member), 
+            DeviceUsers: {admin: false, DeviceId: getCreds(camera).id, UserId: getCreds(device_member).id}},
+        ]};   
+      expectedDeviceMemberView={id: getCreds(camera).id, devicename: getTestName(camera), active: true, Users: null};
     });
     cy.apiAddUserToGroup(group_admin, group_member, group, NOT_ADMIN);
     cy.apiAddUserToDevice(group_admin, device_member, camera);
@@ -78,11 +76,11 @@ describe("Devices list", () => {
 
       const expectedDevice2AdminView={id: getCreds(camera2).id, devicename: getTestName(camera2), active: true, Users: []};
   
-      cy.apiCheckDevices_contains(superuser, [expectedDeviceAdminView,expectedDevice2AdminView])
+      cy.apiCheckDevices_contains(superuser, [expectedDeviceAdminView,expectedDevice2AdminView]);
     });
   } else {
     it.skip("Super-user should see all devices including User details", () => {});
-  };
+  }
 
   //Do not run against a live server as we don't have superuser login
   if(Cypress.env('test_using_default_superuser')==true) {
@@ -123,7 +121,7 @@ describe("Devices list", () => {
     });
   } else {
     it.skip("Super-user 'as user' should see only their devices and users only where they are device admin", () => {});
-  }; 
+  } 
 
   it("Group admin should see everything including device users", () => {
     cy.apiCheckDevices(group_admin, [expectedDeviceAdminView]);

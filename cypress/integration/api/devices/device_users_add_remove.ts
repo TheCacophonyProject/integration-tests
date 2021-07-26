@@ -5,13 +5,7 @@ const HTTP_BadRequest = 400;
 const HTTP_OK = 200;
 
 import { getTestName } from "../../../commands/names";
-import {
-  makeAuthorizedRequest,
-  checkAuthorizedRequestFails,
-  v1ApiPath,
-  getCreds
-} from "../../../commands/server";
-import { logTestDescription } from "../../../commands/descriptions";
+import { getCreds } from "../../../commands/server";
 
 describe("Devices add / view / remove users", () => {
   const group_admin = "Harold-group_admin";
@@ -30,14 +24,14 @@ describe("Devices add / view / remove users", () => {
   const camera2 = 'second_H_camera';
   const superuser = 'admin_test';
   const su_passwd = 'admin_test';
-  var device_member_details;
-  var device_admin_details;
-  var group_admin_details;
-  var group_member_details;
-  var userB_details;
-  var userC_details;
-  var userD_details;
-  var expectedDeviceInGroupUserView;
+  let device_member_details;
+  let device_admin_details;
+  let group_admin_details;
+  let group_member_details;
+  let userB_details;
+  let userC_details;
+  let userD_details;
+  let expectedDeviceInGroupUserView;
 
   before(() => {
     cy.apiCreateUser(group_member);
@@ -82,7 +76,7 @@ describe("Devices add / view / remove users", () => {
     cy.apiCheckDevicesUsers(group_admin, camera, [device_admin_details, group_admin_details]);
   });
 
-    it("Device admin can add/remove user to/from device", () => {
+  it("Device admin can add/remove user to/from device", () => {
 
     // add user to device
     cy.apiAddUserToDevice(device_admin, device_member, camera);
@@ -104,7 +98,7 @@ describe("Devices add / view / remove users", () => {
   if(Cypress.env('test_using_default_superuser')==true) {
     it("Superuser can add/remove user to/from device", () => {
       cy.apiSignInAs(null,null,superuser,su_passwd);
-  	  
+ 
       // add user to device
       cy.apiAddUserToDevice(superuser, device_member, camera);
   
@@ -118,12 +112,12 @@ describe("Devices add / view / remove users", () => {
       cy.apiRemoveUserFromDevice(superuser, device_member, camera);
   
       // check user (but not group admin) has been removed
-        cy.apiCheckDevicesUsers(superuser, camera, [device_admin_details, group_admin_details]);
+      cy.apiCheckDevicesUsers(superuser, camera, [device_admin_details, group_admin_details]);
   
     });
   } else {
     it.skip("Superuser can add/remove user to/from device", () => {});
-  };
+  }
 
   it("Non-admin device member cannot add view or remove user to device", () => {
     // add non-admin user to device

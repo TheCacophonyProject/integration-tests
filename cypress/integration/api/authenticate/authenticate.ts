@@ -74,7 +74,7 @@ describe("Authentication", () => {
     });
   } else {
     it.skip("Superuser can authenticate as another user and receive their permissions", () => {});
-  };
+  }
 
   it("Non-superuser cannot authenticate as another user", () => {
     cy.apiSignInAs(userA);
@@ -92,7 +92,7 @@ describe("Authentication", () => {
     cy.apiToken(userA, null, {'devices': 'r'});
 
     //get device
-    cy.apiCheckDevicesQuery(userA+"_temp_token",[{"devicename": getTestName(camera1), "groupname": getTestName(group1)}],'and',HTTP_OK);
+    cy.apiCheckDevicesQuery(userA+"_temp_token",[{"devicename": getTestName(camera1), "groupname": getTestName(group1)}],null,[{"devicename": getTestName(camera1), "groupname": getTestName(group1)}], 'or',HTTP_OK);
 
     //TODO: enable the remainder of the checks once issue 57 is fixed, or remove the remaining checks if we do not implement.
 

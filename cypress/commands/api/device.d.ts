@@ -20,18 +20,22 @@ declare namespace Cypress {
     apiCreateCamera(
       cameraName: string,
       group: string,
-      log?: boolean
+      saltId: number,
+      log: boolean,
+      statusCode: number
     );
 
      /**
      *register a device under a new group or name
      *optionally check for an error response (statusCode!=200OK)
+     *optionally supply a password (autogenerat if not)
      */
     apiDeviceReregister(
       oldName: string,
       newName: string,
       newGroup: string,
-      log?: boolean,
+      newPassword: string,
+      log: boolean,
       statusCode: number
     );
 
