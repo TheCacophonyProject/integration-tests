@@ -194,17 +194,19 @@ Cypress.Commands.add("apiCheckDevices", (userName: string, expectedDevices: [Com
           expect(devices.length).to.equal(expectedDevices.length);
 	  var dev_count;
 	  var user_count;
+          var sortDevices=sortArrayOn(devices,'devicename');
+          var sortExpectedDevices=sortArrayOn(expectedDevices,'devicename');
           for (dev_count=0; dev_count < expectedDevices.length; dev_count++) {
-  	    expect(devices[dev_count].id).to.equal(expectedDevices[dev_count].id);
-    	    expect(devices[dev_count].devicename).to.equal(expectedDevices[dev_count].devicename);
-	    expect(devices[dev_count].active).to.equal(expectedDevices[dev_count].active);
-            if(expectedDevices[dev_count].Users==null) {
-	      expect(devices[dev_count].Users).to.not.exist;
+  	    expect(sortDevices[dev_count].id).to.equal(sortExpectedDevices[dev_count].id);
+    	    expect(sortDevices[dev_count].devicename).to.equal(sortExpectedDevices[dev_count].devicename);
+	    expect(sortDevices[dev_count].active).to.equal(sortExpectedDevices[dev_count].active);
+            if(sortExpectedDevices[dev_count].Users==null) {
+	      expect(sortDevices[dev_count].Users).to.not.exist;
             } else {
-              expect(devices[dev_count].Users.length).to.equal(expectedDevices[dev_count].Users.length);
+              expect(sortDevices[dev_count].Users.length).to.equal(sortExpectedDevices[dev_count].Users.length);
 	      // sort users and expected users to ensure order is the same
-              var users=sortArrayOn(devices[dev_count].Users,'username');
-              var expectedUsers=sortArrayOn(expectedDevices[dev_count].Users,'username');
+              var users=sortArrayOn(sortDevices[dev_count].Users,'username');
+              var expectedUsers=sortArrayOn(sortExpectedDevices[dev_count].Users,'username');
 
 	      // compare user list
 	      var count
